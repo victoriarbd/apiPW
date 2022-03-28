@@ -45,7 +45,7 @@ module.exports.login = async (req, res) => {
         iduser: result[0][0].iduser,
         isAdmin: result[0][0].isAdmin,
       },
-      process.env.TOKEN,
+     '1ZOIE84588787PO',
       { expiresIn: "5h" }
     );
     res
