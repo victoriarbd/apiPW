@@ -2,13 +2,13 @@ const mysql = require('mysql2/promise');
 
 const db = mysql.createPool({
 
-    host: "localhost",
+    host: "eu-cdbr-west-02.cleardb.net",
  
-    user: "root",
+    user: "b24e13c453dabf",
 
-    password: "password",
+    password: "99d9dc2c",
 
-    database: 'bookdepository',
+    database: 'heroku_ef675ff4d1cace5',
  
   });
 
@@ -24,3 +24,5 @@ db.on('connection', function(connection){
 });
 
 module.exports = db;
+
+// heroku config:set DATABASE_URL='mysql://b24e13c453dabf:99d9dc2c@eu-cdbr-west-02.cleardb.net/heroku_ef675ff4d1cace5?reconnect=true'
