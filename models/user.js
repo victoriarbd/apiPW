@@ -33,6 +33,9 @@ module.exports = class User {
   static getUserByEmailPassword(email, password){
     return db.execute('SELECT * FROM USER WHERE email = ? and password = ?', [email, password]);
   }
+  static updateById(iduser, userReqData){
+    return db.execute('UPDATE USER SET nom = ?, prenom = ?, email = ?, password = ?, isAdmin = ? WHERE iduser = ? ', [userReqData.nom, userReqData.prenom, userReqData.email, userReqData.password, userReqData.isAdmin, iduser]);
+  }
   
 }
 

@@ -9,6 +9,7 @@ Router.post('/login', userCtrl.login);
 Router.get('/', userCtrl.getAllUser);
 Router.post('/', userCtrl.insertUser);
 Router.put('/', auth, userCtrl.putUser);
+Router.put('/:iduser', auth, userCtrl.putUserById)
 Router.delete('/:iduser', auth, userCtrl.deleteUser)
 Router.get('/:iduser', userCtrl.getById)
 
