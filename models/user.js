@@ -1,7 +1,7 @@
 const db = require('../connection');
 
 module.exports = class User {
-  constructor(iduser, nom, prenom, email, password) {
+  constructor(iduser, nom, prenom, email, password, isAdmin) {
     this.iduser = iduser;
     this.nom = nom;
     this.prenom = prenom;
