@@ -14,15 +14,22 @@ module.exports.getAllAuteur = async (req, res, next) => {
 };
 
 module.exports.insertAuteur = async (req, res, next) => {
-  try {
-    const postResponse = await Auteur.post(req.body.nom, req.body.prenom);
-    console.log('Created !')
-    res.status(201).json(postResponse);
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
+  if (!req.auth.isAdmin) {
+    res.status(401).send({
+      results: false,
+      Message: "Tu n'es pas un administrateur",
+    });
+  } else {
+      try {
+        const postResponse = await Auteur.post(req.body.nom, req.body.prenom);
+        console.log('Created !')
+        res.status(201).json(postResponse);
+      } catch (err) {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        next(err);
+      }
   }
 };
 
@@ -40,23 +47,33 @@ exports.putAuteur = async (req, res, next) => {
   };
 
   exports.putAuteurById = async (req, res, next) => {
-    try {
-      const auteurReqData = new Auteur(req.params.idauteur, req.body.nom, req.body.prenom)
-      console.log('auteurReqData update', auteurReqData)
-      console.log('id en question', req.params.idauteur)
-      console.log('id en question', req.body.nom)
-      const putResponse = await Auteur.updateById(req.params.idauteur, auteurReqData);
-      console.log('Updated !')
-      res.status(200).json(putResponse);
-    } catch (err) {
-      if (!err.statusCode) {
-        err.statusCode = 500;
+    if (!req.auth.isAdmin) {
+      res.status(401).send({
+        results: false,
+        Message: "Tu n'es pas un administrateur",
+      });
+    } else {
+        try {
+          const auteurReqData = new Auteur(req.params.idauteur, req.body.nom, req.body.prenom)
+          const putResponse = await Auteur.updateById(req.params.idauteur, auteurReqData);
+          console.log('Updated !')
+          res.status(200).json(putResponse);
+        } catch (err) {
+          if (!err.statusCode) {
+            err.statusCode = 500;
+          }
+          next(err);
+        }
       }
-      next(err);
-    }
   };
 
 exports.deleteAuteur = async (req, res, next) => {
+  if (!req.auth.isAdmin){
+    res.status(401).send({
+      results: false,
+      Message: "Tu n'es pas un administrateur"
+    })
+  }else{
     try {
         const deleteResponse = await Auteur.delete(req.params.idauteur);
         console.log('Deleted !')
@@ -66,6 +83,7 @@ exports.deleteAuteur = async (req, res, next) => {
           res.status(500).json({ message: "Impossible de supprimer l'auteur!" });
         }
     }
+  }
 }
 
 exports.deleteByName = async (req, res, next) => {
