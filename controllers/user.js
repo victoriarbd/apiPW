@@ -59,34 +59,6 @@ module.exports.login = async (req, res) => {
   }
 };
 
-/*
-exports.login = (req, res, next) => { //connecter les utilisateurs existants
-  User.getUserByEmail(req.body.email) //trouve un user dans la bd, email unique donc on sait que si on le trouve ca sera le bon. ici on recupere l'user de la base
-    .then(user => { //si l email pas bon on renvoie une erreur
-      if (user.length === 0) {
-        
-        return res.status(401).json({ error: 'Utilisateur non trouvé !' });
-      }
-      bcryptjs.compare(req.body.password, user.password)  //on compare le mdp entree avec lle mdp dans la bd hashé
-        .then(valid => { //recoit un boolean
-          if (!valid) { //si pas bon erreur
-            return res.status(401).json({ error: 'Mot de passe incorrect !' });
-          }
-          res.status(200).json({  //si c bon on lui renvoie un userId et un token
-            userId: user._id, 
-            token: jwt.sign(
-              { userId: user._id }, //donnée quon veut encoder a l interieur de ce token
-              'foo', //pour encoder notre token (à remplacer par une chaîne aléatoire beaucoup plus longue pour la production) ;
-              { expiresIn: '24h' } //durée du token
-            )
-          });
-        })
-        .catch(error => res.status(500).json({ "erreur" : error }));
-    }) //dois verifier si on a gtrouver un user
-    .catch(error => res.status(500).json({ error }));
-};
-*/
-
 module.exports.getAllUser = async (req, res, next) => {
   try {
     const [allUser] = await User.fetchAll();
