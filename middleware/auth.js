@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
 module.exports = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1]; //recuperer le token dns le header d'autorisation
-    const decodedToken = jwt.verify(token, process.env.TOKEN); //decoder le token
+    const decodedToken = jwt.verify(token, '1ZOIE84588787PO'); //decoder le token
     const userToken = decodedToken
     const userDataBase = await User.getByIdUser(userToken.iduser)
     if (!userDataBase || !userToken){
