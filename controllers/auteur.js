@@ -47,6 +47,7 @@ exports.putAuteur = async (req, res, next) => {
   };
 
   exports.putAuteurById = async (req, res, next) => {
+    console.log(req.auth.isAdmin)
     if (!req.auth.isAdmin) {
       res.status(401).send({
         results: false,
