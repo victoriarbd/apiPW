@@ -10,7 +10,7 @@ exports.signUp = async (req, res) => {
   let results = await User.getUserByEmail(req.body.email);
 
   if (results[0].length > 0) {
-    res.status(409).json({ message: "email déjà existant" });
+    res.status(409).json({ message: "email déjà existan0t" });
   } else {
     const hash = hasher(req.body.password);
     const user = {
