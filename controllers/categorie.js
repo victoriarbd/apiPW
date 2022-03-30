@@ -1,6 +1,6 @@
-const Categorie = require('../models/categorie');
-const { fetchAll, update } = require('../models/categorie');
-const User = require('../models/user');
+const Categorie = require("../models/categorie");
+const { fetchAll, update } = require("../models/categorie");
+const User = require("../models/user");
 
 module.exports.getAllCategorie = async (req, res, next) => {
   try {
@@ -15,28 +15,66 @@ module.exports.getAllCategorie = async (req, res, next) => {
 };
 
 module.exports.insertCategorie = async (req, res, next) => {
-  let results = await Categorie.getCategorieByName(req.body.nom);
-  if (results[0].length > 0) {
-    res.status(409).json({ message: "nom déjà existant" });
+  console.log("test", req.auth.isAdmin);
+  if (!req.auth.isAdmin) {
+    res.status(401).send({
+      results: false,
+      Message: "Tu n'es pas un administrateur",
+    });
   } else {
+    let results = await Categorie.getCategorieByName(req.body.nom);
+    if (results[0].length > 0) {
+      res.status(409).json({ message: "nom déjà existant" });
+    } else {
       try {
         const postResponse = await Categorie.post(req.body.nom);
-        console.log('Created !')
+        console.log("Created !");
         res.status(201).json(postResponse);
       } catch (err) {
         if (!err.statusCode) {
-          console.log("errreor", err)
+          console.log("errreor", err);
           err.statusCode = 500;
         }
         next(err);
       }
+    }
   }
 };
 
 exports.putCategorie = async (req, res, next) => {
+  try {
+    const putResponse = await Categorie.update(
+      req.body.idcategorie,
+      req.body.nom
+    );
+    console.log("Updated !");
+    res.status(200).json(putResponse);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.putCategorieById = async (req, res, next) => {
+  console.log("test", req.auth.isAdmin);
+  if (!req.auth.isAdmin) {
+    res.status(401).send({
+      results: false,
+      Message: "Tu n'es pas un administrateur",
+    });
+  } else {
     try {
-      const putResponse = await Categorie.update(req.body.idcategorie, req.body.nom);
-      console.log('Updated !')
+      const categorieReqData = new Categorie(
+        req.params.idcategorie,
+        req.body.nom
+      );
+      console.log("userReqData update", categorieReqData);
+      const putResponse = await Categorie.updateById(
+        req.params.idcategorie,
+        categorieReqData
+      );
+      console.log("Updated !");
       res.status(200).json(putResponse);
     } catch (err) {
       if (!err.statusCode) {
@@ -44,22 +82,15 @@ exports.putCategorie = async (req, res, next) => {
       }
       next(err);
     }
-  };
-  exports.putCategorieById = async (req, res, next) => {
-    try {
-      const categorieReqData = new Categorie(req.params.idcategorie, req.body.nom)
-      console.log('userReqData update', categorieReqData)
-      const putResponse = await Categorie.updateById(req.params.idcategorie, categorieReqData);
-      console.log('Updated !')
-      res.status(200).json(putResponse);
-    } catch (err) {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    }
-  };
+  }
+};
 exports.deleteCategorie = async (req, res, next) => {
+  if (!req.auth.isAdmin){
+    res.status(401).send({
+      results: false,
+      Message: "Tu n'es pas un administrateur"
+    })
+  }else{
     try {
         const deleteResponse = await Categorie.delete(req.params.idcategorie);
         console.log('Deleted !')
@@ -69,29 +100,32 @@ exports.deleteCategorie = async (req, res, next) => {
             res.status(500).json({ message: "Impossible de supprimer la catégorie!" });
         }
     }
+  }
 }
 exports.deleteByName = async (req, res, next) => {
   try {
-     console.log("ok",req.params.nom)
-      const deleteResponse = await Categorie.deleteCatByName(req.params.nom);
-      console.log('Deleted !')
-      res.status(200).json(deleteResponse);
-  } catch (err){
-      if (!err.statusCode) {
-          err.statusCode = 500;
-          console.log(err)
-      }
+    console.log("ok", req.params.nom);
+    const deleteResponse = await Categorie.deleteCatByName(req.params.nom);
+    console.log("Deleted !");
+    res.status(200).json(deleteResponse);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+      console.log(err);
+    }
   }
-}
+};
 
 exports.getById = async (req, res, next) => {
-    try {
-        const getResponse = await Categorie.getByIdCategorie(req.params.idcategorie);
-        res.status(200).json(getResponse[0][0]);
-    } catch (err){
-        if (!err.statusCode) {
-            err.statusCode = 500;
-            console.log(err)
-        }
+  try {
+    const getResponse = await Categorie.getByIdCategorie(
+      req.params.idcategorie
+    );
+    res.status(200).json(getResponse[0][0]);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+      console.log(err);
     }
-}
+  }
+};

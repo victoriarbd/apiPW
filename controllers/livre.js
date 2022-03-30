@@ -46,35 +46,52 @@ exports.putLivre = async (req, res, next) => {
 
 
   exports.putLivreById = async (req, res, next) => {
-    try {
-      const livreReqData = new Livre(req.params.idlivre, req.body.nom, req.body.description, req.body.image, req.body.prix, req.body.etat, req.body.ville, req.body.idcategorie, req.body.idgenre, req.body.idauteur, req.body.iduser)
-      console.log('livreReqData update', livreReqData)
-      console.log('id en question', req.params.idlivre)
-      console.log('id en question', req.body.nom)
-      const putResponse = await Livre.updateById(req.params.idlivre, livreReqData);
-      console.log('Updated !')
-      res.status(200).json(putResponse);
-    } catch (err) {
-      if (!err.statusCode) {
-        err.status(500).json(err);
-        //err.statusCode = 500;
-      }
-      next(err);
+    const lelivre = await Livre.getByIdLivre(req.params.idlivre)
+    const lelivre2 = lelivre[0][0]
+    const iduserLivre = lelivre2.iduser
+    if (req.auth.iduser != iduserLivre){
+      res.status(401).send({
+        results: false,
+        Message: "Tu n'es pas autorisé à modifier cette annonce"
+      })
+    }else{
+        try {
+          const livreReqData = new Livre(req.params.idlivre, req.body.nom, req.body.description, req.body.image, req.body.prix, req.body.etat, req.body.ville, req.body.idcategorie, req.body.idgenre, req.body.idauteur, req.body.iduser)
+          const putResponse = await Livre.updateById(req.params.idlivre, livreReqData);
+          console.log('Updated !')
+          res.status(200).json(putResponse);
+        } catch (err) {
+          if (!err.statusCode) {
+            err.status(500).json(err);
+            //err.statusCode = 500;
+          }
+          next(err);
+        }
     }
   };
 
-exports.deleteLivre = async (req, res, next) => {
-    try {
-        const deleteResponse = await Livre.delete(req.params.idlivre);
-        console.log('Deleted !')
-        res.status(200).json(deleteResponse);
-    } catch (err){
-        if (!err.statusCode) {
-            err.statusCode = 500;
-            console.log(err)
-        }
+  exports.deleteLivre = async (req, res, next) => {
+    const lelivre = await Livre.getByIdLivre(req.params.idlivre)
+    const lelivre2 = lelivre[0][0]
+    const iduserLivre = lelivre2.iduser
+    if (req.auth.iduser != iduserLivre){
+      res.status(401).send({
+        results: false,
+        Message: "Tu n'es pas autorisé à supprimer cette annonce"
+      })
+    }else{
+      try {
+          const deleteResponse = await Livre.delete(req.params.idlivre);
+          console.log('Deleted !')
+          res.status(200).json(deleteResponse);
+      } catch (err){
+          if (!err.statusCode) {
+              err.statusCode = 500;
+              console.log(err)
+          }
+      }
     }
-}
+  }
 
 exports.getById = async (req, res, next) => {
     try {
