@@ -139,34 +139,47 @@ exports.putUser = async (req, res, next) => {
 };
 
 exports.putUserById = async (req, res, next) => {
-  try {
-    const hash = hasher(req.body.password);
-    console.log(req.params.iduser, req.body.nom, req.body.prenom, req.body.email, req.body.password)
-    const userReqData = new User(req.params.iduser, req.body.nom, req.body.prenom, req.body.email, hash, req.body.isAdmin)
-    console.log('livreReqData update', userReqData)
-    console.log('id en question', req.params.iduser)
-    console.log('id en question', req.body.nom)
-    const putResponse = await User.updateById(req.params.iduser, userReqData);
-    console.log('Updated !')
-    res.status(200).json(putResponse);
-  } catch (err) {
-    if (!err.statusCode) {
-      //err.status(500).json(err);
-      err.statusCode = 500;
+  const luser = await User.getByIdUser(req.params.iduser)
+    const luser2 = luser[0][0]
+    const iduserr = luser2.iduser
+    if (req.auth.iduser != iduserr){
+      res.status(401).send({
+        results: false,
+        Message: "Tu n'es pas autorisé à modifier cette annonce"
+      })
+    }else{
+      try {
+        const hash = hasher(req.body.password);
+        const userReqData = new User(req.params.iduser, req.body.nom, req.body.prenom, req.body.email, hash, req.body.isAdmin)
+        const putResponse = await User.updateById(req.params.iduser, userReqData);
+        console.log('Updated !')
+        res.status(200).json(putResponse);
+      } catch (err) {
+        if (!err.statusCode) {
+          //err.status(500).json(err);
+          err.statusCode = 500;
+        }
+        next(err);
+      }
     }
-    next(err);
-  }
 };
 
 exports.deleteUser = async (req, res, next) => {
-  try {
-    const deleteResponse = await User.delete(req.params.iduser);
-    console.log("Deleted !");
-    res.status(200).json(deleteResponse);
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-      console.log(err);
+  if (!req.auth.isAdmin){
+    res.status(401).send({
+      results: false,
+      Message: "Tu n'es pas un administrateur"
+    })
+  }else{
+    try {
+      const deleteResponse = await User.delete(req.params.iduser);
+      console.log("Deleted !");
+      res.status(200).json(deleteResponse);
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+        console.log(err);
+      }
     }
   }
 };
