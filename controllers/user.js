@@ -18,7 +18,7 @@ exports.signUp = async (req, res) => {
       prenom: req.body.prenom,
       email: req.body.email,
       password: hash,
-      isAdmin: req.body.isAdmin,
+      isAdmin: 0,
     };
     User.post(user.nom, user.prenom, user.email, user.password, user.isAdmin)
       .then(() => {
