@@ -2,13 +2,13 @@ const mysql = require('mysql2/promise');
 
 const db = mysql.createPool({
 
-    host: "eu-cdbr-west-02.cleardb.net",
+    host: process.env.DBHOST,
  
-    user: "b24e13c453dabf",
+    user: process.env.DBUSERNAME,
 
-    password: "99d9dc2c",
+    password: process.env.DBPASSWORD,
 
-    database: 'heroku_ef675ff4d1cace5',
+    database: process.env.DATABASE,
  
   });
 
@@ -25,4 +25,3 @@ db.on('connection', function(connection){
 
 module.exports = db;
 
-// heroku config:set DATABASE_URL='mysql://b24e13c453dabf:99d9dc2c@eu-cdbr-west-02.cleardb.net/heroku_ef675ff4d1cace5?reconnect=true'

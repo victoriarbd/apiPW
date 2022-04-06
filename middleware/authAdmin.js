@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1]; //recuperer le token dns le header d'autorisation
-    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET2'); //decoder le token
+    const decodedToken = jwt.verify(token, process.env.TOKEN); //decoder le token
     const iduser = decodedToken.iduser; //on recupere le userId du token 
     const admin = decodedToken.isAdmin
     req.auth = { iduser }; //la requeste comporte l'user id mtn. raccourci js meme nom meme variable ici c la meme que userId: userId
